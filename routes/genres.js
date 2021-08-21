@@ -6,8 +6,12 @@ const express = require("express");
 const router = express.Router();
 
 router.get("/", async (req, res) => {
-  const genres = await Genre.find().sort("name");
-  res.send(genres);
+  try {
+    const genres = await Genre.find().sort("name");
+    res.send(genres);
+  } catch (ex) {
+    res.status(500).send("something failed.");
+  }
 });
 
 router.post("/", auth, async (req, res) => {
@@ -38,7 +42,7 @@ router.put("/:id", async (req, res) => {
   res.send(genre);
 });
 
-router.delete("/:id",[auth, admin], async (req, res) => {
+router.delete("/:id", [auth, admin], async (req, res) => {
   const genre = await Genre.findByIdAndRemove(req.params.id);
 
   if (!genre)
